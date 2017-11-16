@@ -75,14 +75,6 @@ class Climbpro::Board
           Coordinate.new(x: 2, y: 5),
         ],
       ),
-      Piece.new(
-        id: 10,
-        shape: Piece::POST,
-        coordinates: [
-          Coordinate.new(x: 0, y: 0),
-          Coordinate.new(x: 3, y: 0),
-        ],
-      ),
     ]
   )
 
@@ -93,6 +85,91 @@ class Climbpro::Board
     @pieces = pieces
   end
 
+  def make_moves(hashes)
+    boards = [] of Board
+
+    pieces.each do |piece|
+      (1..3).each do |count|
+        new_board = clone
+        new_board.layer += 1
+        new_piece = new_board.pieces.select { |p| p.id == piece.id }.first
+        new_piece.coordinates.each_with_index do |coordinate, index|
+          coordinate.x -= count
+          new_piece.coordinates[index] = coordinate
+        end
+
+        if new_board.valid?(hashes)
+          boards << new_board
+          hashes << new_board.hash
+        else
+          break
+        end
+      end
+
+      (1..3).each do |count|
+        new_board = clone
+        new_board.layer += 1
+        new_piece = new_board.pieces.select { |p| p.id == piece.id }.first
+        new_piece.coordinates.each_with_index do |coordinate, index|
+          coordinate.x += count
+          new_piece.coordinates[index] = coordinate
+        end
+
+        if new_board.valid?(hashes)
+          boards << new_board
+          hashes << new_board.hash
+        else
+          break
+        end
+      end
+
+      (1..5).each do |count|
+        new_board = clone
+        new_board.layer += 1
+        new_piece = new_board.pieces.select { |p| p.id == piece.id }.first
+        new_piece.coordinates.each_with_index do |coordinate, index|
+          coordinate.y -= count
+          new_piece.coordinates[index] = coordinate
+        end
+
+        if new_board.valid?(hashes)
+          boards << new_board
+          hashes << new_board.hash
+        else
+          break
+        end
+      end
+
+      (1..5).each do |count|
+        new_board = clone
+        new_board.layer += 1
+        new_piece = new_board.pieces.select { |p| p.id == piece.id }.first
+        new_piece.coordinates.each_with_index do |coordinate, index|
+          coordinate.y += count
+          new_piece.coordinates[index] = coordinate
+        end
+
+        if new_board.valid?(hashes)
+          boards << new_board
+          hashes << new_board.hash
+        else
+          break
+        end
+      end
+    end
+
+    boards
+  end
+
+  def solved?
+    squares = pieces.select { |piece| piece.shape == Piece::SQUARE }
+
+    squares.any? do |piece|
+      piece.coordinates.any? { |coordinate| coordinate.x == 1 && coordinate.y == 0 } &&
+        piece.coordinates.any? { |coordinate| coordinate.x == 2 && coordinate.y == 0 }
+    end
+  end
+
   def display
     coordinates = pieces.flat_map do |piece|
       piece.coordinates.each { |coord| coord.display_char(piece.display) }
@@ -101,7 +178,9 @@ class Climbpro::Board
 
     display_board = (0..(rowsize * columnsize - 1)).map do |i|
       coordinate = coordinates.select { |coord| coord.index == i }
-      if coordinate.size == 1
+      if i == 0 || i == 3
+        "@"
+      elsif coordinate.size == 1
         coordinate.first.display
       else
         " "
@@ -116,8 +195,54 @@ class Climbpro::Board
     end
   end
 
+  def valid?(hashes)
+    if hashes.includes?(hash)
+      # puts "hashed away"
+      # if layer == 4
+      #   display
+      # end
+      return false
+    end
+
+    all_coordinates = pieces.flat_map { |piece| piece.coordinates }
+
+    out_of_bounds_coordinates = all_coordinates.select do |coordinate|
+      coordinate.x < 0 ||
+        coordinate.x > 3 ||
+        coordinate.y < 0 ||
+        coordinate.y > 5 ||
+        (coordinate.x == 0 && coordinate.y == 0) ||
+        (coordinate.x == 3 && coordinate.y == 0)
+    end
+
+    if out_of_bounds_coordinates.size > 0
+      return false
+    end
+
+    coord_indexes = all_coordinates.map { |coordinate| coordinate.index }
+    coord_indexes.uniq.size == coord_indexes.size
+  end
+
+  def hash
+    string = "#{rowsize.hash}#{columnsize.hash}"
+    pieces.sort_by { |p| p.id }.reduce(string) { |acc, p| "#{acc}#{p.hash}" }
+  end
+
+  def clone
+    Board.new(
+      rowsize: rowsize,
+      columnsize: columnsize,
+      layer: layer,
+      pieces: pieces.map { |piece| piece.clone }.sort_by { |piece| piece.id },
+    )
+  end
+
   def layer
     @layer
+  end
+
+  def layer=(other)
+    @layer = other
   end
 
   def rowsize
@@ -130,5 +255,9 @@ class Climbpro::Board
 
   def pieces
     @pieces
+  end
+
+  def pieces=(other)
+    @pieces = other
   end
 end

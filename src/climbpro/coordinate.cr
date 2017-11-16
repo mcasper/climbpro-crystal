@@ -3,13 +3,17 @@ class Climbpro::Coordinate
     @x = x
     @y = y
   end
-  
+
   def display
     @display_char
   end
 
   def index
     x + (y * 4)
+  end
+
+  def hash
+    x * (y * 4)
   end
 
   def display_char(char : String)
@@ -20,7 +24,22 @@ class Climbpro::Coordinate
     @x
   end
 
+  def x=(other)
+    @x = other
+  end
+
   def y
     @y
+  end
+
+  def y=(other)
+    @y = other
+  end
+
+  def clone
+    Coordinate.new(
+      x: x,
+      y: y,
+    )
   end
 end

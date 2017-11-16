@@ -32,11 +32,24 @@ class Climbpro::Piece
     @id
   end
 
+  def hash
+    string = "#{id.hash}#{shape.hash}"
+    coordinates.reduce(string) { |acc,c| "#{acc}#{c.hash}" }
+  end
+
   def shape
     @shape
   end
 
   def coordinates
     @coordinates
+  end
+
+  def clone
+    Piece.new(
+      id: id,
+      shape: shape,
+      coordinates: coordinates.map { |coordinate| coordinate.clone }.sort_by { |c| c.index },
+    )
   end
 end
