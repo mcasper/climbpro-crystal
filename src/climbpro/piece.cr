@@ -33,8 +33,8 @@ class Climbpro::Piece
   end
 
   def hash
-    string = "#{id.hash}#{shape.hash}"
-    coordinates.reduce(string) { |acc,c| "#{acc}#{c.hash}" }
+    string = shape
+    coordinates.sort_by { |coordinate| coordinate.index }.reduce(string) { |acc,c| "#{acc}#{c.hash}" }
   end
 
   def shape

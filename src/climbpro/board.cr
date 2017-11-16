@@ -1,4 +1,83 @@
 class Climbpro::Board
+  TEN_TWELVE_BOARD = Board.new(
+    rowsize: 4,
+    columnsize: 6,
+    pieces: [
+      Piece.new(
+        id: 1,
+        shape: Piece::LINE,
+        coordinates: [
+          Coordinate.new(x: 0, y: 1),
+          Coordinate.new(x: 0, y: 2),
+        ],
+      ),
+      Piece.new(
+        id: 2,
+        shape: Piece::DOT,
+        coordinates: [
+          Coordinate.new(x: 1, y: 2),
+        ],
+      ),
+      Piece.new(
+        id: 3,
+        shape: Piece::L,
+        coordinates: [
+          Coordinate.new(x: 3, y: 1),
+          Coordinate.new(x: 3, y: 2),
+          Coordinate.new(x: 2, y: 2),
+        ],
+      ),
+      Piece.new(
+        id: 4,
+        shape: Piece::L,
+        coordinates: [
+          Coordinate.new(x: 0, y: 3),
+          Coordinate.new(x: 0, y: 4),
+          Coordinate.new(x: 1, y: 3),
+        ],
+      ),
+      Piece.new(
+        id: 5,
+        shape: Piece::SQUARE,
+        coordinates: [
+          Coordinate.new(x: 1, y: 4),
+          Coordinate.new(x: 1, y: 5),
+          Coordinate.new(x: 2, y: 4),
+          Coordinate.new(x: 2, y: 5),
+        ],
+      ),
+      Piece.new(
+        id: 6,
+        shape: Piece::DOT,
+        coordinates: [
+          Coordinate.new(x: 2, y: 3),
+        ],
+      ),
+      Piece.new(
+        id: 7,
+        shape: Piece::LINE,
+        coordinates: [
+          Coordinate.new(x: 3, y: 3),
+          Coordinate.new(x: 3, y: 4),
+        ],
+      ),
+      Piece.new(
+        id: 8,
+        shape: Piece::DOT,
+        coordinates: [
+          Coordinate.new(x: 0, y: 5),
+        ],
+      ),
+      Piece.new(
+        id: 9,
+        shape: Piece::DOT,
+        coordinates: [
+          Coordinate.new(x: 3, y: 5),
+        ],
+      ),
+    ]
+  )
+
   TEN_BOARD = Board.new(
     rowsize: 4,
     columnsize: 6,
@@ -100,7 +179,7 @@ class Climbpro::Board
 
         if new_board.valid?(hashes)
           boards << new_board
-          hashes << new_board.hash
+          hashes[new_board.hash] = 1
         else
           break
         end
@@ -117,7 +196,7 @@ class Climbpro::Board
 
         if new_board.valid?(hashes)
           boards << new_board
-          hashes << new_board.hash
+          hashes[new_board.hash] = 1
         else
           break
         end
@@ -134,7 +213,7 @@ class Climbpro::Board
 
         if new_board.valid?(hashes)
           boards << new_board
-          hashes << new_board.hash
+          hashes[new_board.hash] = 1
         else
           break
         end
@@ -151,7 +230,7 @@ class Climbpro::Board
 
         if new_board.valid?(hashes)
           boards << new_board
-          hashes << new_board.hash
+          hashes[new_board.hash] = 1
         else
           break
         end
@@ -196,11 +275,7 @@ class Climbpro::Board
   end
 
   def valid?(hashes)
-    if hashes.includes?(hash)
-      # puts "hashed away"
-      # if layer == 4
-      #   display
-      # end
+    if hashes.fetch(hash) { 0 } == 1
       return false
     end
 
@@ -224,8 +299,7 @@ class Climbpro::Board
   end
 
   def hash
-    string = "#{rowsize.hash}#{columnsize.hash}"
-    pieces.sort_by { |p| p.id }.reduce(string) { |acc, p| "#{acc}#{p.hash}" }
+    pieces.sort_by { |p| p.id }.map { |piece| piece.hash }.join("")
   end
 
   def clone

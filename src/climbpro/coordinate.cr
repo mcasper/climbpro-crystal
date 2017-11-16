@@ -12,12 +12,12 @@ class Climbpro::Coordinate
     x + (y * 4)
   end
 
-  def hash
-    x * (y * 4)
-  end
-
   def display_char(char : String)
     @display_char = char
+  end
+
+  def hash
+    "(#{x},#{y})"
   end
 
   def x

@@ -2,23 +2,24 @@ module Climbpro
   class Game
     def self.solve(board)
       boards = [board]
-      hashes = [board.hash]
+      hashes = { board.hash => 1 }
+      start = Time.now
 
       while boards.size > 0
         next_boards = boards.flat_map do |board|
           board.make_moves(hashes)
         end
 
-        # puts hashes
-        # next_boards.each { |b| puts ""; puts b.hash; b.display }
-
         if next_boards.size > 0
-          puts "Layer #{next_boards.first.layer} has #{next_boards.size} board(s)"
+          puts "Layer #{next_boards.first.layer} has #{next_boards.size} board(s) - #{Time.now - start}"
 
-          next_boards.each do |board|
-            if board.solved?
-              puts "Solved it on layer #{board.layer}!!!!!!!!!!!!!!"
-              board.display
+          if next_boards.first.layer > 28
+            next_boards.each do |board|
+              if board.solved?
+                puts "Solved it on layer #{board.layer}!!!!!!!!!!!!!!"
+                board.display
+                break
+              end
             end
           end
         else
