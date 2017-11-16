@@ -1,3 +1,3 @@
 require "./climbpro/*"
 
-Game.solve(TEN_BOARD)
+Climbpro::Game.solve(board: Climbpro::Board::TEN_BOARD)

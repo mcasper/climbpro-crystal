@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-describe Climbpro::Crystal do
+describe Climbpro do
   # TODO: Write tests
 
   it "works" do
