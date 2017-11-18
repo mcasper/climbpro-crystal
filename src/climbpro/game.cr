@@ -4,6 +4,8 @@ module Climbpro
       boards = [board]
       hashes = { board.hash => 1 }
       start = Time.now
+      puts "Starting board:"
+      board.display
 
       while boards.size > 0
         next_boards = boards.flat_map do |board|
